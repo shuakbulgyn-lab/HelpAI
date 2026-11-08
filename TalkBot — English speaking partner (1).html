@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TalkBot — English speaking partner</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600&display=swap">
+<style>
+:root{--bg:#eef6f8;--card:#fff;--ink:#0f2a30;--mute:#58727a;--cy:#0e8fa8;--glow:#19b5e8;--line:#cfe2e6;--ok:#157f3b;--bad:#c2331a;--me:#0f6f86;--meink:#fff;--hero1:#d8f1f6;--hero2:#eaf7fa;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#08161a;--card:#102429;--ink:#e8f6f8;--mute:#8fb0b8;--cy:#3fd3ee;--line:#1f3d44;--ok:#58d98a;--bad:#ff8a73;--me:#12708a;--hero1:#0b2a33;--hero2:#08161a}}
+:root[data-theme="dark"]{--bg:#08161a;--card:#102429;--ink:#e8f6f8;--mute:#8fb0b8;--cy:#3fd3ee;--line:#1f3d44;--ok:#58d98a;--bad:#ff8a73;--me:#12708a;--hero1:#0b2a33;--hero2:#08161a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.5 Figtree,system-ui,sans-serif}
+main{max-width:720px;margin:0 auto;padding:0 14px 40px}
+h1{font:800 clamp(30px,8vw,42px)/1.05 'Bricolage Grotesque',system-ui,sans-serif;margin:0 0 6px}
+.hero{background:linear-gradient(160deg,var(--hero1),var(--hero2));border:1px solid var(--line);border-radius:22px;padding:18px;margin:14px 0;display:flex;gap:16px;align-items:center}
+.orb{flex:none;width:84px;height:84px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--glow) 45%,#0a4c66);box-shadow:0 0 0 6px color-mix(in srgb,var(--glow) 18%,transparent),0 0 30px color-mix(in srgb,var(--glow) 55%,transparent)}
+.orb.talk{animation:pulse 1s ease-in-out infinite}.orb.listen{animation:pulse .6s ease-in-out infinite;background:radial-gradient(circle at 35% 30%,#fff,#ff6b4a 50%,#7a2412)}
+@keyframes pulse{50%{transform:scale(1.1)}}
+.mute{color:var(--mute);font-size:15px;margin:0}
+.bars{display:flex;gap:3px;height:22px;align-items:center;margin-top:8px}.bars i{width:4px;height:6px;border-radius:3px;background:var(--cy);opacity:.5}
+.orb.talk~div .bars i,.on .bars i{animation:bar .7s ease-in-out infinite;opacity:1}
+.bars i:nth-child(2n){animation-delay:.15s!important}.bars i:nth-child(3n){animation-delay:.3s!important}
+@keyframes bar{50%{height:22px}}
+.set{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:12px}
+.set b{display:block;font-size:14px;color:var(--mute);margin:8px 0 6px;font-weight:600}.set b:first-child{margin-top:0}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+button{font:600 15px Figtree,sans-serif;border:2px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer}
+button.on{border-color:var(--cy);background:color-mix(in srgb,var(--cy) 16%,transparent)}
+button.main{background:var(--cy);color:#04222a;border-color:var(--cy)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:3px solid var(--cy);outline-offset:2px}
+#chat{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.b{max-width:88%;padding:10px 14px;border-radius:18px;white-space:pre-wrap}
+.ai{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:6px}
+.me{align-self:flex-end;background:var(--me);color:var(--meink);border-bottom-right-radius:6px}
+.fb{align-self:flex-end;width:88%;background:color-mix(in srgb,var(--cy) 8%,var(--card));border:1px solid var(--line);border-radius:16px;padding:10px 14px;font-size:15px}
+.fb .ok{color:var(--ok);font-weight:600}
+.fx{padding:8px 0;border-top:1px solid var(--line)}.fx:first-of-type{border-top:0}
+.fx s{color:var(--bad)}.fx strong{color:var(--ok)}.fx span{display:block;color:var(--mute);margin-top:2px}
+.sp{align-self:flex-start;color:var(--mute);font-size:15px}
+.in{position:sticky;bottom:0;background:var(--bg);padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;align-items:center}
+.in input{flex:1;min-width:0;font:400 17px Figtree,sans-serif;padding:12px 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.mic{width:52px;height:52px;padding:0;font-size:22px;flex:none}
+.warn{background:color-mix(in srgb,#ff6b4a 16%,var(--card));border-radius:12px;padding:10px 12px;font-size:15px;margin:8px 0}
+#sum{display:none}
+.prog{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin:4px 0}.prog i{display:block;height:100%;width:0;background:var(--cy);transition:width .4s}
+.fc{text-align:center;padding:16px 8px}.fc .big{font:800 26px 'Bricolage Grotesque',sans-serif;margin:10px 0}
+.hb{text-align:left;border-radius:14px}.mic#hint{font-size:20px}
+</style>
+</head>
+<body><main>
+<div class="hero"><div class="orb" id="orb"></div><div><h1>TalkBot</h1><p class="mute">Разговаривай по-английски. ИИ отвечает голосом и показывает твои ошибки с объяснением.<br>Speak English. I’ll answer and explain your mistakes.</p><div class="bars" id="bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+<div class="set" id="set">
+<b>Уровень / Level</b><div class="seg" id="lv"></div>
+<b>Тема / Topic</b><div class="seg" id="tp"></div>
+<b>Акцент ИИ / Accent</b><div class="seg" id="ac"></div>
+<b>Объяснения / Explanations</b><div class="seg" id="ex"></div><b>Цель сессии / Goal</b><div class="seg" id="gl"></div><b>Авто-микрофон (как звонок)</b><div class="seg" id="au"></div>
+<p style="margin:12px 0 0"><button class="main" id="start">Начать разговор · Start</button> <button id="bk0">📚 Мои слова (0)</button></p>
+</div>
+<div class="set" id="bar" style="display:none;padding:8px 12px"><button id="again">⚙ Настройки / Заново</button> <button id="sumb">📚 Мои слова (0)</button> <button id="au2">🔁 Авто: вкл</button><div id="pw" style="display:none;margin-top:8px"><div class="prog"><i id="pi"></i></div><span class="mute" id="pt"></span></div></div>
+<div id="chat" aria-live="polite"></div>
+<div id="sum" class="set"></div>
+<div class="in" id="in" style="display:none"><button class="mic" id="hint" aria-label="Hint" title="Подсказка">💡</button><button class="mic" id="mic" aria-label="Speak">🎤</button><input id="txt" type="text" placeholder="Type or press 🎤 and speak…" autocomplete="off"><button class="main" id="send">Send</button></div>
+</main>
+<script>
+var OPT={lv:[['A2','A2 начальный'],['B1','B1 средний'],['B2','B2 выше среднего'],['C1','C1 продвинутый']],tp:[['free conversation','Свободная'],['travel','Путешествия'],['school and studies','Учёба'],['job interview','Интервью']],ac:[['en-US','American'],['en-GB','British'],['en-AU','Australian'],['en-CA','Canadian']],ex:[['Russian','По-русски'],['English','In English']],gl:[['r10','10 реплик'],['r5','5 реплик'],['t3','3 минуты'],['none','Без цели']],au:[['1','Включён'],['0','Выключен']]};
+var S={lv:'B1',tp:'free conversation',ac:'en-US',ex:'Russian',h:[],all:[],busy:false,sample:null};
+var $=function(i){return document.getElementById(i)};
+var synth=window.speechSynthesis,SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null;
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function chips(k){$(k).innerHTML=OPT[k].map(function(o){return '<button class="'+(S[k]===o[0]?'on':'')+'" data-k="'+k+'" data-v="'+o[0]+'">'+o[1]+'</button>'}).join('')}
+['lv','tp','ac','ex'].forEach(chips);
+$('set').addEventListener('click',function(e){var b=e.target.closest('button[data-k]');if(!b)return;S[b.dataset.k]=b.dataset.v;chips(b.dataset.k)});
+function add(cls,html){var d=document.createElement('div');d.className=cls;d.innerHTML=html;$('chat').appendChild(d);d.scrollIntoView({block:'end',behavior:'smooth'});return d}
+function speak(t){if(!synth)return;synth.cancel();var u=new SpeechSynthesisUtterance(t);u.lang=S.ac;u.rate=.95;
+ var v=synth.getVoices().filter(function(x){return x.lang.replace('_','-')===S.ac})[0];if(v)u.voice=v;
+ u.onstart=function(){$('orb').className='orb talk';$('bars').className='bars on'};u.onend=u.onerror=function(){$('orb').className='orb';$('bars').className='bars'};synth.speak(u)}
+function prompt(msg){
+ var hist=S.h.map(function(m){return (m.r==='u'?'Learner: ':'You: ')+m.t}).join('\n');
+ return 'You are TalkBot, a friendly English speaking partner and tutor. Learner level: '+S.lv+'. Topic: '+S.tp+'. Language for explanations: '+S.ex+'.\n\nConversation so far:\n'+(hist||'(none)')+'\n\n'+
+ (msg?'Learner’s latest message: '+msg:'Start the conversation: greet the learner warmly and ask one simple question about the topic.')+
+ '\n\nReturn ONLY valid JSON, no markdown: {"reply":"your answer in English, 1-3 short sentences at the learner’s level, ending with a question","corrections":[{"wrong":"exact words from the learner","right":"corrected words","why":"short clear explanation in '+S.ex+', name the rule"}],"better":"one more natural way to say the whole message, or empty string"}. '+
+ 'List only real grammar, word-choice or preposition errors (max 4). Ignore missing capital letters and punctuation, because the text may come from speech recognition. If there are no mistakes, use an empty array.'}
+function parse(t){t=t.replace(/```json|```/g,'').trim();var a=t.indexOf('{'),b=t.lastIndexOf('}');return JSON.parse(t.slice(a,b+1))}
+async function turn(msg){
+ if(S.busy)return;S.busy=true;$('send').disabled=$('mic').disabled=true;
+ var w=add('sp','TalkBot думает… / thinking…');
+ try{
+  if(!S.sample)S.sample=await claude.use('sample');
+  if(!S.sample)throw {code:'none'};
+  var r=await S.sample(prompt(msg),{cache:false});var j=parse(r.text);
+  w.remove();
+  if(msg){var fb='';var c=j.corrections||[];
+   if(!c.length)fb='<span class="ok">✔ Ошибок нет! No mistakes.</span>';
+   else fb=c.map(function(x){addCard(x);return '<div class="fx"><s>'+esc(x.wrong)+'</s> → <strong>'+esc(x.right)+'</strong><span>'+esc(x.why)+'</span></div>'}).join('');
+   if(j.better)fb+='<div class="fx"><span>💡 Natural: <i>'+esc(j.better)+'</i></span></div>';
+   add('fb',fb);}
+  S.h.push({r:'a',t:j.reply});add('b ai',esc(j.reply));speak(j.reply);
+ }catch(e){w.remove();var m=e&&e.code==='not_granted'?'Нужно разрешить доступ к ИИ на этой странице. / Please allow AI access.':e&&e.code==='rate_limited'?'Слишком много запросов, подожди минуту. / Too many requests, wait a minute.':'Не получилось получить ответ. Попробуй ещё раз. / Could not get an answer, try again.';add('warn',m)}
+ S.busy=false;$('send').disabled=$('mic').disabled=false;
+}
+function send(){var t=$('txt').value.trim();if(!t||S.busy)return;$('txt').value='';S.h.push({r:'u',t:t});add('b me',esc(t));turn(t)}
+$('start').onclick=function(){S.h=[];S.all=[];$('chat').innerHTML='';$('sum').style.display='none';$('in').style.display='flex';$('set').style.display='none';$('bar').style.display='block';turn('')};
+$('again').onclick=function(){if(synth)synth.cancel();$('set').style.display='block';$('bar').style.display='none';$('in').style.display='none';$('chat').innerHTML='';$('sum').style.display='none';S.h=[];S.all=[]};
+$('send').onclick=send;$('txt').addEventListener('keydown',function(e){if(e.key==='Enter')send()});
+$('mic').onclick=function(){
+ if(!SR){add('warn','Голосовой ввод работает в Chrome. Можно печатать. / Voice input needs Chrome; you can type.');return}
+ if(synth)synth.cancel();rec=new SR();rec.lang=S.ac;rec.interimResults=false;rec.maxAlternatives=1;
+ $('orb').className='orb listen';$('mic').disabled=true;var got='';
+ rec.onresult=function(e){got=e.results[0][0].transcript};
+ rec.onerror=function(e){if(e.error==='not-allowed'||e.error==='service-not-allowed')S.miss=9;if(e.error==='not-allowed'||e.error==='service-not-allowed')add('warn','Разреши микрофон для этой страницы. / Please allow the microphone.')};
+ rec.onend=function(){$('orb').className='orb';$('mic').disabled=false;if(got){S.miss=0;$('txt').value=got;send()}else if(S.au==='1'&&S.live){if(++S.miss<3){after()}else{S.miss=0;add('sp','Микрофон на паузе — нажми 🎤. / Mic paused, press 🎤.')}}};
+ try{rec.start()}catch(x){$('orb').className='orb';$('mic').disabled=false}};
+$('sumb').onclick=function(){var s=$('sum');
+ s.innerHTML='<b style="font-size:18px;color:var(--ink)">Мои ошибки · '+S.all.length+'</b>'+(S.all.length?S.all.map(function(x){return '<div class="fx"><s>'+esc(x.wrong)+'</s> → <strong>'+esc(x.right)+'</strong><span>'+esc(x.why)+'</span></div>'}).join(''):'<p class="mute">Пока ошибок нет — отлично!</p>');
+ s.style.display='block';s.scrollIntoView({behavior:'smooth'})};
+if(synth)synth.onvoiceschanged=function(){};
+var AC=window.AudioContext||window.webkitAudioContext,ctx;
+S.gl='r10';S.au='1';S.miss=0;S.sp=0;S.n=0;S.live=false;S.hints=[];
+try{S.cards=JSON.parse(localStorage.getItem('tb_cards'))||[]}catch(e){S.cards=[]}
+chips('gl');chips('au');
+function beep(){try{ctx=ctx||new AC();var o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=880;g.gain.value=.12;o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.14)}catch(e){}}
+function save(){try{localStorage.setItem('tb_cards',JSON.stringify(S.cards))}catch(e){}}
+function cnt(){var t='📚 Мои слова ('+S.cards.length+')';$('sumb').textContent=t;$('bk0').textContent=t}
+function addCard(x){if(!x||!x.wrong||!x.right)return;if(S.cards.some(function(c){return c.wrong===x.wrong&&c.right===x.right}))return;S.cards.push({wrong:x.wrong,right:x.right,why:x.why||'',ok:0});save();cnt()}
+function fmt(s){return Math.floor(s/60)+':'+('0'+s%60).slice(-2)}
+function after(){if(S.au==='1'&&S.live){beep();setTimeout(function(){if(S.live&&!S.busy)$('mic').click()},350)}}
+function speak(t){if(!synth){after();return}var id=++S.sp;synth.cancel();var u=new SpeechSynthesisUtterance(t);u.lang=S.ac;u.rate=.95;
+ var v=synth.getVoices().filter(function(x){return x.lang.replace('_','-')===S.ac})[0];if(v)u.voice=v;
+ u.onstart=function(){$('orb').className='orb talk';$('bars').className='bars on'};
+ u.onend=u.onerror=function(){if(id!==S.sp)return;$('orb').className='orb';$('bars').className='bars';after()};synth.speak(u)}
+var m0=$('mic').onclick;$('mic').onclick=function(){S.sp++;m0.call(this)};
+function send(){var t=$('txt').value.trim();if(!t||S.busy)return;$('txt').value='';S.h.push({r:'u',t:t});S.n++;add('b me',esc(t));prog();turn(t)}
+function prog(){var g=S.gl,w=$('pw');if(!S.live||g==='none'){w.style.display='none';return}
+ var tot,cur,txt;if(g[0]==='r'){tot=+g.slice(1);cur=S.n;txt='Реплики: '+Math.min(cur,tot)+' / '+tot}else{tot=+g.slice(1)*60;cur=Math.floor((Date.now()-S.t0)/1000);txt='Время: '+fmt(Math.min(cur,tot))+' / '+fmt(tot)}
+ var p=Math.min(100,Math.round(cur/tot*100));w.style.display='block';$('pi').style.width=p+'%';$('pt').textContent=txt+(p>=100?' ✔':'');
+ if(p>=100&&!S.done){S.done=true;add('fb','<span class="ok">🎉 Цель достигнута! Goal reached — можно продолжать.</span>')}}
+var st0=$('start').onclick;$('start').onclick=function(){try{ctx=ctx||new AC();ctx.resume()}catch(e){}S.n=0;S.t0=Date.now();S.done=false;S.live=true;S.miss=0;clearInterval(S.iv);S.iv=setInterval(prog,1000);$('au2').textContent='🔁 Авто: '+(S.au==='1'?'вкл':'выкл');prog();cnt();st0()};
+var ag0=$('again').onclick;$('again').onclick=function(){S.live=false;S.sp++;clearInterval(S.iv);try{rec&&rec.abort()}catch(e){}$('pw').style.display='none';ag0()};
+$('au2').onclick=function(){S.au=S.au==='1'?'0':'1';this.textContent='🔁 Авто: '+(S.au==='1'?'вкл':'выкл');if(S.au==='0'){try{rec&&rec.abort()}catch(e){}}chips('au')};
+$('hint').onclick=async function(){if(S.busy||!S.live)return;S.busy=true;var w=add('sp','Ищу подсказки… / thinking…');
+ try{if(!S.sample)S.sample=await claude.use('sample');var hist=S.h.map(function(m){return (m.r==='u'?'Learner: ':'Tutor: ')+m.t}).join('\n');
+  var r=await S.sample('You are an English tutor. Learner level '+S.lv+'. Topic: '+S.tp+'. Conversation:\n'+hist+'\n\nThe learner does not know what to say next. Give 3 different short replies (max 12 words each) that answer the tutor’s last question, matching the level. Return ONLY JSON: {"hints":[{"en":"reply in English","ru":"Russian translation"}]}',{cache:false});
+  var j=parse(r.text);w.remove();S.hints=j.hints.map(function(h){return h.en});
+  add('fb','<b>💡 Можно ответить (нажми, чтобы вставить):</b>'+j.hints.map(function(h,i){return '<div class="fx"><button class="hb" data-i="'+i+'">'+esc(h.en)+'</button><span>'+esc(h.ru)+'</span></div>'}).join(''))}
+ catch(e){w.remove();add('warn','Не удалось получить подсказку. / Could not get a hint.')}S.busy=false};
+$('chat').addEventListener('click',function(e){var b=e.target.closest('.hb');if(b){$('txt').value=S.hints[+b.dataset.i];$('txt').focus()}});
+function book(){var s=$('sum'),n=S.cards.length;
+ s.innerHTML='<b style="font-size:18px;color:var(--ink)">📚 Мои слова · '+n+'</b>'+(n?'<p><button class="main" id="dr">🃏 Тренировать</button> <button id="cl">🗑 Очистить</button> <button id="cx">✕</button></p>'+S.cards.map(function(x){return '<div class="fx"><s>'+esc(x.wrong)+'</s> → <strong>'+esc(x.right)+'</strong><span>'+esc(x.why)+(x.ok?' · выучено ×'+x.ok:'')+'</span></div>'}).join(''):'<p class="mute">Пока пусто. Ошибки из разговора сохраняются здесь автоматически и остаются после перезагрузки.</p><button id="cx">✕</button>');
+ s.style.display='block';s.scrollIntoView({behavior:'smooth'});$('cx').onclick=function(){s.style.display='none'};
+ if(n){$('dr').onclick=drill;$('cl').onclick=function(){if(confirm('Удалить все карточки?')){S.cards=[];save();cnt();book()}}}}
+function drill(){S.q=S.cards.slice().sort(function(a,b){return a.ok-b.ok||Math.random()-.5});card()}
+function card(){var s=$('sum');if(!S.q.length){s.innerHTML='<p class="fc"><span class="big">🎉 Все карточки пройдены!</span></p><button id="bk">← К списку</button>';$('bk').onclick=book;return}
+ var c=S.q[0];s.innerHTML='<p class="mute">Осталось: '+S.q.length+'</p><div class="fc"><div class="mute">Исправь ошибку:</div><div class="big"><s>'+esc(c.wrong)+'</s></div><div id="bk2"></div></div><p><button class="main" id="sh">Показать ответ</button> <button id="bk">← К списку</button></p>';
+ $('bk').onclick=book;$('sh').onclick=function(){$('bk2').innerHTML='<div class="big"><strong>'+esc(c.right)+'</strong></div><div class="mute">'+esc(c.why)+'</div>';$('sh').outerHTML='<button class="main" id="kn">✅ Знаю</button> <button id="ag">🔁 Ещё раз</button>';
+  $('kn').onclick=function(){c.ok++;save();S.q.shift();card()};$('ag').onclick=function(){c.ok=0;save();S.q.push(S.q.shift());card()}}}
+$('sumb').onclick=book;$('bk0').onclick=book;cnt();
+</script></body></html>
